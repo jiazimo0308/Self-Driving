@@ -21,15 +21,18 @@ Realize automatic driving, traffic light recognition, and obstacle avoidance on 
 （Due to the desire to validate the previously trained autonomous driving model on a real vehicle platform, in order to test the reliability of the autonomous driving model in practical situations. We have built an intelligent vehicle platform specifically designed for autonomous driving scenarios. This platform is modified from the Huanyu Intelligent Vehicle Platform, and its software control is based on the Robot Operating System (ROS). This chapter will introduce the hardware and software components used. Afterwards, experiments will be conducted in simulated scenarios to verify the actual performance of the autonomous driving model.）
 
 ## 3.1 场景平台的搭建
-为了实现自动驾驶的安全性和可靠性，大量的数据收集和测试是必不可少的。然而， 在真实道路上进行数据收集和测试存在一些问题，例如高昂的成本、时间限制、安全风险 等。因此，建立自动驾驶模拟环境成为了一种有效的解决方案。自动驾驶模拟环境是通过 仿真技术来模拟现实世界中的各种场景和情况，以进行自动驾驶系统的开发和测试。在这 个模拟环境中，可以利用虚拟的道路网络、车辆模型和传感器模拟真实道路上的交通情况。 通过收集和分析模拟环境中的数据，可以评估自动驾驶系统在不同情况下的性能和稳定性。
-首先，进行自动驾驶模拟环境道路的设计，实现基本的道路行驶，智能车根据当前路 况做出前进，后退，左转与右转动作。
+为了实现自动驾驶的安全性和可靠性，大量的数据收集和测试是必不可少的。然而，在真实道路上进行数据收集和测试存在一些问题，例如高昂的成本、时间限制、安全风险等。因此，建立自动驾驶模拟环境成为了一种有效的解决方案。自动驾驶模拟环境是通过仿真技术来模拟现实世界中的各种场景和情况，以进行自动驾驶系统的开发和测试。在这个模拟环境中，可以利用虚拟的道路网络、车辆模型和传感器模拟真实道路上的交通情况。通过收集和分析模拟环境中的数据，可以评估自动驾驶系统在不同情况下的性能和稳定性。
+首先，进行自动驾驶模拟环境道路的设计，实现基本的道路行驶，智能车根据当前路况做出前进，后退，左转与右转动作
 
+(In order to achieve the safety and reliability of autonomous driving, extensive data collection and testing are essential. However, there are some issues with data collection and testing on real roads, such as high costs, time constraints, safety risks, etc. Therefore, establishing an autonomous driving simulation environment has become an effective solution. The automatic driving simulation environment simulates various scenes and situations in the real world through simulation technology to develop and test the auto drive system. In this simulation environment, virtual road networks, vehicle models, and sensors can be used to simulate traffic conditions on real roads. By collecting and analyzing the data in the simulation environment, the performance and stability of the auto drive system in different situations can be evaluated.Firstly, the design of an autonomous driving simulation environment road is carried out to achieve basic road driving. The intelligent vehicle makes forward, backward, left turn, and right turn actions based on the current road conditions.)
 
+![轨道详细数据](https://github.com/user-attachments/assets/0db7cf7a-73d3-442d-8b69-8137887bd3a6)
 
+所设计的自动驾驶模拟环境在宽度为420厘米长度460厘米的矩形上进行车道设计。为了进一步保证模拟实际行车情况所涉及到的路况，设计车道宽度为35厘米对应1.5倍车身宽度。并从两条黑色标记点开始以逆时针顺序运行。共有6个直角弯，1个回头弯，2个折角弯和7条直道组成。
 
+(The designed autonomous driving simulation environment performs lane design on a rectangle with a width of 420 centimeters and a length of 460 centimeters. In order to further ensure the road conditions involved in simulating actual driving situations, the designed lane width is 35 centimeters, corresponding to 1.5 times the width of the vehicle body. And run in counterclockwise order starting from the two black marked points. There are a total of 6 right angle bends, 1 turn back bend, 2 corner bends, and 7 straight paths.)
 
-
-
+<img width="385" alt="截屏2024-11-08 23 14 58" src="https://github.com/user-attachments/assets/760d7d55-adda-479f-be52-e114ccbccebd">
 
 
 
