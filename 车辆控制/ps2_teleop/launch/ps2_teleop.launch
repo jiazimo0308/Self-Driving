@@ -1,0 +1,3 @@
+<launch>
+    <node name="ps2_teleop" pkg="ps2_teleop" type="ps2_teleop_node.py" output="screen"/>
+</launch>
