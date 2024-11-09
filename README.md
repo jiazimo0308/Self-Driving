@@ -3,12 +3,12 @@
 
 Realize automatic driving, traffic light recognition, and obstacle avoidance on smart cars
 
-# 1 摘要（Abstract）
+# 1.摘要（Abstract）
 本文为实现自动驾驶系统，设计并实施了三个核心功能：自动行车、避障以及红绿灯识别，并最终将这三种功能进行分级合并。系统设计阶段，结合硬件环境，主要设计了智能车行驶、数据采集及模型部署系统。数据采集系统获取相机标定板数据以及行驶信息。经过深度处理，运用计算机视觉算法，处理得到可供模型训练的数据。自动行车系统的设计采用了两种深度学习模型和两种训练任务进行模型训练，并在比较分析的基础上，结合实际运行环境，优化训练结果。避障系统借助激光雷达扫描环境数据，确定车辆四个方向范围，并根据计算结果，指导智能车避障。红绿灯识别系统在新色彩空间下划分颜色区间并提取信号灯发光部分，进一步识别颜色，根据识别颜色控制车辆行动。将上述三种功能在已实现的情况下进行整合，设计功能优先级划分，根据实际硬件环境设计单独功能的运行逻辑。并根据最终设计的结果进行智能车实际部署以实现自动驾驶功能。
 
 (In order to realize the auto drive system, this paper designs and implements three core functions: automatic driving, obstacle avoidance and traffic light recognition. Finally, these three functions are classified and combined. In the system design phase, combined with the hardware environment, the intelligent vehicle driving, data collection, and model deployment system were mainly designed. The data acquisition system obtains camera calibration board data and driving information. After deep processing, computer vision algorithms are used to obtain data that can be used for model training. The design of the automatic driving system adopts two deep learning models and two training tasks for model training, and optimizes the training results based on comparative analysis and actual operating environment. The obstacle avoidance system uses LiDAR to scan environmental data, determine the four directional ranges of the vehicle, and guide intelligent vehicles in obstacle avoidance based on the calculation results. The traffic light recognition system divides color intervals in the new color space and extracts the illuminated parts of the signal lights, further identifying colors and controlling vehicle movement based on the identified colors. Integrate the above three functions in the already implemented situation, design priority division of functions, and design the operation logic of individual functions based on the actual hardware environment. And based on the final design results, deploy the intelligent vehicle to achieve autonomous driving function.)
 
-# 2 研究思路与方法（Research ideas and methods）
+# 2.研究思路与方法（Research ideas and Methods）
 通过搭建场景平台，设置信号灯以及障碍物探究自动驾驶解决方法。重新设计符合智能车与场景平台下的操作系统，针对采集后的数据处理方法进行了深入的实验和测试。在搭建自动行驶系统中，选择两种符合当前计算资源下的小体量深度学习模型进行不同训练任务的测试，对比分析模型训练结果，并针对在实际情况部署所产生的问题进行解决和优化。设计智能车避障系统，利用智能车前端激光雷达扫描数据进行方向区间划分，将激光扫描到的区域划分成若干个小区间，并根据划分区间的计算结果使智能车实现避障。结合实际剩余计算资源设计红绿灯识别系统，根据不同颜色数值区间的差异性进行颜色识别。当上述三种功能完成时，设定三种功能优先等级，结合实际运行环境设计自动驾驶系统。
 
 <div align=center>
@@ -17,7 +17,7 @@ Realize automatic driving, traffic light recognition, and obstacle avoidance on 
 
 （Explore solutions for autonomous driving by building a scene platform, setting up traffic lights and obstacles. Redesigned an operating system that is compatible with intelligent vehicles and scene platforms, and conducted in-depth experiments and tests on the data processing methods after collection.In building an autonomous driving system, two small-scale deep learning models that are suitable for the current computing resources are selected for testing different training tasks, and the training results of the models are compared and analyzed. Solutions and optimizations are made based on the problems arising from deployment in practical situations.Design an intelligent vehicle obstacle avoidance system that uses the front-end LiDAR scanning data of the intelligent vehicle to divide the direction interval, dividing the area scanned by the laser into several small intervals, and enabling the intelligent vehicle to achieve obstacle avoidance based on the calculation results of the divided intervals.Design a traffic light recognition system based on actual remaining computing resources, and recognize colors according to the differences in numerical ranges of different colors. When the above three functions are completed, set the priority of the three functions, and design the auto drive system in combination with the actual operating environment.）
 
-# 3 实验环境与平台(Experimental environment and platform)
+# 3.实验环境与平台(Experimental Environment and Platform)
 由于希望在实车平台上验证前文所训练的自动驾驶模型，以考验自动驾驶模型在实际 情况下的可靠性。为此搭建了专门面向自动驾驶工况场景的智能车平台。该平台由幻宇智 能车平台改装而来，软件控制基于机器人操作系统(Robot Operating System,ROS)。本章将 对使用到的硬件及软件部分进行介绍。之后在模拟场景下进行试验，以验证自动驾驶模型 的实际性能。
 
 （Due to the desire to validate the previously trained autonomous driving model on a real vehicle platform, in order to test the reliability of the autonomous driving model in practical situations. We have built an intelligent vehicle platform specifically designed for autonomous driving scenarios. This platform is modified from the Huanyu Intelligent Vehicle Platform, and its software control is based on the Robot Operating System (ROS). This chapter will introduce the hardware and software components used. Afterwards, experiments will be conducted in simulated scenarios to verify the actual performance of the autonomous driving model.）
@@ -52,19 +52,23 @@ Realize automatic driving, traffic light recognition, and obstacle avoidance on 
 (The construction of the autonomous driving intelligent car platform is based on a four-wheel drive remote control car equipped with Mecanum wheels developed by Huanyu. The hardware system structure installed on it is shown in Figure 11. The motherboard uses NVIDIA Jetson B01 development version, which adopts ARM architecture. Equipped with a quad core Cortex-A57 processor, featuring a 128 core Maxwell GPU and 4GB LPCDDR memory. Supports multiple AI frameworks and algorithms, balancing small size and high computing power. The lower controller uses a self-developed motherboard from Huanyu, which is responsible for receiving signals from the upper motherboard through serial communication and transmitting them in the form of PWM waves to the four encoding motors downstream through the motherboard chip, thereby controlling the motion of the intelligent vehicle chassis. The DC 12V encoded drive motor provides powerful driving force for the operation of intelligent vehicles. For the perception module, considering the form of data required for the later dataset, an onboard sensor scheme is used, which includes a binocular camera with perception depth developed by Obi Zhongguang, a built-in IMU for auxiliary correction, and a Silan A1 laser radar. The sensing module can provide the longitudinal velocity and angular velocity of the vehicle body and transmit these two state variables to the motherboard. The sensor module can achieve a measurement frequency of 10Hz. The 12V lithium battery supplies power to the upper motherboard through the lower motherboard, while the motor is mainly powered by the 12V port on the lower motherboard. The software development of the vehicle control algorithm is based on the ROS system, where the vehicle control end mainly uses the geometriy_msgs and sensor-msgs function packages. The operating frequency of the control module is set to 10Hz. In the actual process, the time for intelligent vehicles to judge and take action on the road conditions ahead can be controlled within 100ms, reflecting the real-time performance of autonomous driving algorithms.)
 
 ## 3.3 计算平台（Computing platform）
-由于本次实验的数据集主要由图像数据组成，其特点是数据量大、数据具有高维性或结构性。这对计算机的中央处理器以及图形处理器提出了较高的要求。为了满足对计算资源的需求，我们选择了两台高性能计算机进行数据处理与模型训练。
-首先，选用了一台搭载M2 PRO芯片的计算机，该机具有10核中央处理器和16核图形处理器，以及16GB四通道内存。这台计算机主要负责整体框架搭建，实验尝试性验证以及部分训练任务。M2 PRO芯片的强大计算能力和高效的内存管理，使得它能够快速处理大量的图像数据，提高实验效率。其次，选用了一台惠普Z600工作站，该工作站搭载了双核至强E5640中央处理器，双路DDR4 32GB内存和1TB固态硬盘，以及一块特斯拉丽台p100显卡，该卡拥有24GB的显存。这台工作站主要用于处理大规模的多维数据和模型训练的任务。双中央处理器和大容量的内存使工作站能够连续处理大规模的图像数据，1TB的固态硬盘则提供了足够的空间，保证了数据处理与模型训练的顺利进行，进一步保证了计算的可靠性。
- 
-# 4 车辆操控与数据处理
+由于本次实验的数据集主要由图像数据组成，其特点是数据量大、数据具有高维性或结构性。这对计算机的中央处理器以及图形处理器提出了较高的要求。为了满足对计算资源的需求，我们选择了两台高性能计算机进行数据处理与模型训练。首先，选用了一台搭载M2 PRO芯片的计算机，该机具有10核中央处理器和16核图形处理器，以及16GB四通道内存。这台计算机主要负责整体框架搭建，实验尝试性验证以及部分训练任务。M2 PRO芯片的强大计算能力和高效的内存管理，使得它能够快速处理大量的图像数据，提高实验效率。其次，选用了一台惠普Z600工作站，该工作站搭载了双核至强E5640中央处理器，双路DDR4 32GB内存和1TB固态硬盘，以及一块特斯拉丽台p100显卡，该卡拥有24GB的显存。这台工作站主要用于处理大规模的多维数据和模型训练的任务。双中央处理器和大容量的内存使工作站能够连续处理大规模的图像数据，1TB的固态硬盘则提供了足够的空间，保证了数据处理与模型训练的顺利进行，进一步保证了计算的可靠性。
+
+(Due to the fact that the dataset used in this experiment is mainly composed of image data, which is characterized by a large amount of data and high dimensionality or structure. This places high demands on the central processing unit and graphics processor of computers. In order to meet the demand for computing resources, we selected two high-performance computers for data processing and model training. Firstly, a computer equipped with M2 PRO chip was selected, which has a 10 core central processing unit, a 16 core graphics processor, and 16GB of four channel memory. This computer is mainly responsible for overall framework construction, experimental trial verification, and some training tasks. The powerful computing power and efficient memory management of the M2 PRO chip enable it to quickly process large amounts of image data, improving experimental efficiency. Secondly, an HP Z600 workstation was selected, which is equipped with a dual core Xeon E5640 central processing unit, dual DDR4 32GB memory, 1TB solid-state drive, and a Tesla Lita P100 graphics card with 24GB of video memory. This workstation is mainly used for processing large-scale multidimensional data and model training tasks. The dual central processing units and large capacity memory enable the workstation to continuously process large-scale image data, while the 1TB solid-state drive provides sufficient space to ensure smooth data processing and model training, further ensuring computational reliability.)
+
+# 4.车辆操控与数据处理
 ## 4.1 操控系统设计
 数据采集分为标定图像数据采和行驶图像与行驶速度的采集。由于不同部分对数据集的要求不同，所以按每种部分的要求分别设计智能车操控系统。并在次基础上设计了行驶轨迹，行车录像等功能，操作方式上主要尝试了电脑端操控与PS2手柄端操控，并最终找到最优的解决方案。
-### 4.1.1 操控系统的分析与选取
-在本次试验基于机器人操作系统ROS上，采用Python语言对智能车的操作进行设计。分别设计了电脑键盘端智能车操控系统与PS2手柄端智能车操作系统。从而实现智能车前进，后退，左转，右转。并在此基础上实现相对应的数据采集功能。
-在电脑端，通过电脑端键盘中“w”,“s”,“a”,“d”键位实现对智能车的前进，后退，左转与右转。在实际搭建过程中使用到了pynput,pygame,curses等库进行测试，由于在实际运行中部分库只能在一个刷新频率下读取一个键盘输入值，因此在一个刷新周期中智能车只能进行一个动作，从而导致智能车运行卡顿不畅。为了保证智能车动作的连贯性，放弃电脑端的设计进而转向PS2手柄端的智能车操控系统。PS2手柄端正面共有13个键位。其中三个为内置功能，其余为可开发键位。为了更好的反应智能车实际的运行情况，选取两个遥感键位作为实现智能车前进，后退，左转，右转的真实运行情况。其余键位根据实际的数据采集需要进行合理的开发。首先确定每个键位在ROS系统中所代表的位置在哪里。根据ROS中的节点joy_node进行打印.
 
+(Data collection is divided into calibration image data collection and collection of driving images and driving speed. Due to different requirements for the dataset in different parts, intelligent vehicle control systems are designed separately according to the requirements of each part. And based on this, we designed functions such as driving trajectory and driving video recording. In terms of operation, we mainly tried computer control and PS2 controller control, and finally found the optimal solution.)
+
+### 4.1.1 操控系统的分析与选取
+在本次试验基于机器人操作系统ROS上，采用Python语言对智能车的操作进行设计。分别设计了电脑键盘端智能车操控系统与PS2手柄端智能车操作系统。从而实现智能车前进，后退，左转，右转。并在此基础上实现相对应的数据采集功能。在电脑端，通过电脑端键盘中“w”,“s”,“a”,“d”键位实现对智能车的前进，后退，左转与右转。在实际搭建过程中使用到了pynput,pygame,curses等库进行测试，由于在实际运行中部分库只能在一个刷新频率下读取一个键盘输入值，因此在一个刷新周期中智能车只能进行一个动作，从而导致智能车运行卡顿不畅。为了保证智能车动作的连贯性，放弃电脑端的设计进而转向PS2手柄端的智能车操控系统。PS2手柄端正面共有13个键位。其中三个为内置功能，其余为可开发键位。为了更好的反应智能车实际的运行情况，选取两个遥感键位作为实现智能车前进，后退，左转，右转的真实运行情况。其余键位根据实际的数据采集需要进行合理的开发。首先确定每个键位在ROS系统中所代表的位置在哪里。根据ROS中的节点joy_node进行打印.
 <div align=center>
 <img width="400" alt="截屏2024-11-09 13 24 53" src="https://github.com/user-attachments/assets/217009c2-99e8-4a57-8308-fd4ddddab34d">
 <img/></div>
+
+(In this experiment, the operation of the intelligent car was designed using Python language based on the robot operating system ROS. We have separately designed a computer keyboard based intelligent car control system and a PS2 controller based intelligent car operating system. Thus achieving intelligent vehicle forward, backward, left turn, and right turn. And based on this, implement corresponding data collection functions. On the computer side, the "w", "s", "a", and "d" keys on the computer keyboard are used to move the smart car forward, backward, left, and right. In the actual construction process, libraries such as pynput, pygame, curses, etc. were used for testing. However, due to the fact that some libraries can only read one keyboard input value at one refresh rate during actual operation, the smart car can only perform one action in one refresh cycle, resulting in slow operation. In order to ensure the coherence of the actions of the intelligent car, the design of the computer end was abandoned and the direction shifted to the PS2 controller end of the intelligent car control system. There are a total of 13 key positions on the front of the PS2 controller end. Three of them are built-in functions, while the rest are playable keys. In order to better reflect the actual operation of the intelligent vehicle, two remote sensing key positions are selected to achieve the real operation of the intelligent vehicle's forward, backward, left turn, and right turn. The remaining key positions should be developed reasonably according to the actual data collection needs. Firstly, determine where each key position represents in the ROS system. Print based on the node joy_node in ROS.)
 
 键位信息设计智能车的操控系统,实现智能车的前进，后退左转与右转以及智能车的三种运行速度的切换。在运行开始前,设置初始基础速度为0（base_speed=0）,遥感手柄的axes[7]左右两个按键为智能车实现三种运行速度的切换按键，左按键用于加速调节,右按键用于减速调节，且调节的最大值为3。智能车的前进力度与转弯力度由遥感手柄的axes[1]与axes[2]的两个参数linear_speed和angular_speed控制，最后通过速度综合控制函数得到最终行驶的线速度与角速度。
 
@@ -241,7 +245,7 @@ Realize automatic driving, traffic light recognition, and obstacle avoidance on 
 
 根据表5所示的占比最高的标签在数据均衡化后数据量相差不大，数据量基本均衡。数据均衡化的结果在经过需要删除数据名称的筛选和无效数据进行合并。在得到无效数据和均衡化要删除的图像名称后，图像根据无效数据和均衡化要删除的图像名对图像数据进行删除，删除后并再次进行两者数据量的比较和又一次的数据一致性检验。在此之后，图像数据进行数据增强，高斯模糊与灰度化，二值化与等比缩放，速度数据则根据标签进行分层抽样，并进行数据的划分得到速度数据的训练集与测试集，而后图像数据根据划分得到的训练集与测试集进行图像训练集与测试集的分类，在每组数据中进行分层抽样操作，并抽取30%作为测试集与剩下70%的数据作为训练集，最后将训练集与测试集进行打包形成最终的训练数据集与测试数据集。
 
-# 5 自动驾驶功能实现与整合
+# 5.自动驾驶功能实现与整合
 ## 5.1 自动行车系统的设计与实现
 由于在实际的模型部署中，智能车运用模型对当前路况进行合理且快速的判断。因此建立起的自动行车模型架构不宜过大，模型应具备模型体量小且训练效果较好的特点，根据实际应用情况，本章节介绍了针对行车数据的分析以及英伟达端到端模型和LeNet-5模型的训练并选择最优模型作为智能车自动行驶模型解决方案。
 ### 5.1.1 行车数据分析
@@ -359,94 +363,133 @@ LeNet-5模型是一种早期的卷积神经网络模型，由Yann Lecun等人于
 <img/></div>
 
 
-车轨迹采集系统为单传感器收集数据，所以在智能车车头朝向会存在误差，由于车头朝向数据的偏差，导致起始位置与结束位置不重合。但智能车在实际车道中的表现并没有由于误差而造成消失。模型部署的实际效果主要是智能车在直行车道中的稳定性以及智能车在行驶弯道时的表现，主要评判标准为在直行车道中智能车蛇形运动幅度的大小，造成蛇形运动的产生主要分为两个方面，其一是在进行数据处理时缩小了感受域，导致模型只针对处理后的感受域做出判断，不能结合未来道路的变化进行提前的判断来及时修正车身，使车身修正幅度过大。其二，智能车在道路行驶所占据的位置很大程度上决定了智能车是否修正当前车身。当出现弯道时，智能车入弯位置很大程度上决定了智能车出弯位置，当智能车在不合适的出弯位置时，智能车这时就会进行车身姿态的修正，由于在实际计算平台中需要结合智能车有限的算力进行判断，所以识别频率受到限制，导致智能车在修正车身后不能及时的辨别智能车当前位置，使辨别速度与实际情况产生滞后效果，最终使智能车陷入不断的车身姿态修正过程中。
+   车轨迹采集系统为单传感器收集数据，所以在智能车车头朝向会存在误差，由于车头朝向数据的偏差，导致起始位置与结束位置不重合。但智能车在实际车道中的表现并没有由于误差而造成消失。模型部署的实际效果主要是智能车在直行车道中的稳定性以及智能车在行驶弯道时的表现，主要评判标准为在直行车道中智能车蛇形运动幅度的大小，造成蛇形运动的产生主要分为两个方面，其一是在进行数据处理时缩小了感受域，导致模型只针对处理后的感受域做出判断，不能结合未来道路的变化进行提前的判断来及时修正车身，使车身修正幅度过大。其二，智能车在道路行驶所占据的位置很大程度上决定了智能车是否修正当前车身。当出现弯道时，智能车入弯位置很大程度上决定了智能车出弯位置，当智能车在不合适的出弯位置时，智能车这时就会进行车身姿态的修正，由于在实际计算平台中需要结合智能车有限的算力进行判断，所以识别频率受到限制，导致智能车在修正车身后不能及时的辨别智能车当前位置，使辨别速度与实际情况产生滞后效果，最终使智能车陷入不断的车身姿态修正过程中。
 在上图四种模型中，红色圈内是智能车在不同模型模型下的行驶轨迹。其中英伟达端到端类模型中，回归模型比分类模型所产生的轨迹更加平滑。但结合真实的汽车行驶情况中，车辆在道路上行驶与车道的位置事实上并不是保持相对单一的位置，而是根据实际情况下对车辆在车道中的位置进行实时的修正。这种修正会随着速度的变化导致修正幅度的改变。在低速行驶中，车辆可以在很短的时间内实现很大幅度的修正范围，但在高速行驶中，车辆要实现与低速行驶中相同的修正幅度，需要的修正时间要远远大于车辆在低速下修正所需的时间。出于安全考虑的真实情况下，虽然两种算法都达到了可判断自行行驶的效果，但英伟达端到端分类模型的实际行驶效果要优于英伟达端到端回归模型。英伟达端到端分类模型的调整次数少且幅度小，调整精确。LeNet-5模型中，LeNet-5回归模型在直行道路的稳定性明显优于LeNet-5分类模型。LeNet-5回归模型的调整幅度更小且调整次数明显小于LeNet-5分类模型。英伟达端到端模型总体优于LeNet-5模型行驶的轨迹。
 智能车对弯道的识别行驶也是评判四种模型识别道路准确性的参考依据，智能车在行驶弯道中所呈现的轨迹越平滑，表明模型在合适的入弯位置识别并做出了正确的判断。在绿色圈内，为一个连续弯道，连续的弯道可以反应出模型对于快速变化的路况是否可以做出及时的正确调整，如果智能车处于不利于进入弯道的位置，则会导致智能车在通过弯道时驶出车道，或使智能车在弯道中进行调整造成时间的浪费。根据上图中四个模型在连续弯道中的表现，英伟达端到端回归模型的轨迹相比于英伟达端到端分类模型轨迹更加平滑，但智能车在通过第一个弯道后，在进入第二个弯道时，英伟达端到端回归模型车头指向性不如英伟达端到端分类模型车头的指向性更加清晰。而在LeNet-5模型中，LeNet-5回归模型在连续弯道的行驶轨迹比LeNet-5分类模型的行驶轨迹更加平滑，且LeNet-5分类模型在第一个弯道中进行车头非平滑的调整，虽然使智能车最终保持到了车道内，但因此浪费了更多的时间。最终在行驶到第二个弯道时，LeNet-5分类模型车头的指向不如LeNet-5回归模型车头指向性明确。英伟达端到端分类模型和LeNet-5回归模型轨迹明显优于剩余的两种模型。 
 
 #### 5.1.5.2 行车模型的改进
 在行车模型的实现结果中，可以发现在四种模型的实际部署中都存在在直行车道中车身发生了一定幅度的抖动最终产生蛇形现象。抖动程度的大小取决于很多影响因素，比如智能车计算资源有限所导致计算频率降低，从而导致智能车反应不及时。或者在数据采集时，由于车道存在非传统弯道而导致了智能车在出弯时不能处于合适位置，从而造成模型计算错误。为了避免由于以上所存在的问题导致智能车在行驶过程中出现的蛇行现象。通过缩小智能车在行驶过程中的感受野，训练模型进行当前道路的判断，进而合理抑制智能车在直行道路行驶过程中的蛇形现象。
 在真实驾车行驶过程中，车辆在直行道路行驶过程中也并非始终保持道路中间，期间也有驾驶人员的不断修正，通过驾驶员的不断修正来使得车辆保持在道路中间位置。修正波长越长则反馈的体感强度越小，震荡感越轻微。修正波长越短则反馈的体感越强，震荡感越明显。因此减小车辆自身行驶修正强度至关重要。驾驶员通常做出决策并不局限于远处视野路况，而是进行远近的路况扫描，并最终做出行驶决策。根据此缩小智能车的感受视野，对当前这部分感受视野进行路况判断。通过对路况的判断再结合正常自动行驶模型所需要的原始感受野，最终输出车辆在当前路况下合理的行驶速度。
-
-通过行车数据图像处理的结果进行道路识别感受野的划分，道路识别感受野通过道路识别模型识别出当前道路情况，而处理后的行测数据则通过自动行车模型计算出当前需要的线速度与角速度。若道路识别出当前道路为直行车道，自动行车预测的角速度值过大，则进行智能车角速度的抑制；若道路识别出当前道路为弯道，自动行车预测的角速度值则不受到抑制。并获得最终角速度与线速度使智能车进行行驶。
-通过对行车数据采集处理后的数据进行路况判断的感受野范围的提取，以原图像中间为界限，向上向下提取原图像高度的20%。并通过人工分类的方法对图像进行分类。共分为弯道与直道两种类别，每种类别共1253张图片
-
+<div align=center>
+<img width="400" alt="截屏2024-11-09 20 27 10" src="https://github.com/user-attachments/assets/5f9b31a9-e7fe-43d4-9598-c88f6e0679f4">
+<img/></div>
+通过行车数据图像处理的结果进行道路识别感受野的划分，道路识别感受野通过道路识别模型识别出当前道路情况，而处理后的行测数据则通过自动行车模型计算出当前需要的线速度与角速度。若道路识别出当前道路为直行车道，自动行车预测的角速度值过大，则进行智能车角速度的抑制；若道路识别出当前道路为弯道，自动行车预测的角速度值则不受到抑制。并获得最终角速度与线速度使智能车进行行驶。通过对行车数据采集处理后的数据进行路况判断的感受野范围的提取，以原图像中间为界限，向上向下提取原图像高度的20%。并通过人工分类的方法对图像进行分类。共分为弯道与直道两种类别，每种类别共1253张图片
+<div align=center>
+<img width="400" alt="截屏2024-11-09 20 28 38" src="https://github.com/user-attachments/assets/4d1efc3b-8abb-4961-b49b-c53ff16d9f90">
+<img/></div>
 为了减小道路识别模型对智能车计算资源的占用，提高模型的计算速度，这里使用广义线性回归对模型进行训练。将数据集划分为测试集与训练集，其中测试集占原数据集个数的20%，其余为训练集。根据划分后的数据对模型进行训练。模型训练后在测试集上的准确率达到了0.94076923，在测试集上模型训练的准确率为0.93406593。且训练速度为23秒，模型占用内存为10MB。模型训练结果较好。
 在实际部署过程中，模型可以根据当前感受野对路况进行分辨，并控制自动行驶模型计算到的角速度进行调控。如图为遇到不同路况时道路识别模型识别到的结果。
-
+<div align=center>
+<img width="250" alt="截屏2024-11-09 20 28 45" src="https://github.com/user-attachments/assets/07543959-1792-4bc4-a5be-7f21f69db39a">
+<img width="250" alt="截屏2024-11-09 20 28 54" src="https://github.com/user-attachments/assets/13a82aa9-9605-47af-b5dc-7941529bb9bd">
+<img/></div>
+<div align=center>
+<img width="400" alt="截屏2024-11-09 20 29 00" src="https://github.com/user-attachments/assets/1854643e-dd73-4800-8497-812281961d3d">
+<img/></div>
 通过加入道路识别辅助智能车行驶，避免智能车在行驶过程中产生的蛇形运动。通过道路识别结果可以看到道路识别模型对当前道路识别的结果，若识别为直行车道则把识别区域的白色车道填充为绿色，若识别结果为弯道，则把识别区域的白色车道填充为红色。根据不同颜色车道的标注从而更好的让智能车识别当前的车道情况。后应用于智能车自动行驶中，如图65改进后智能车行驶轨迹所示，图中行驶轨迹相较于四个自动行驶模型轨迹更加顺滑，且在直行车道中虽能体现出智能车在车道中的调整但调整频率与调整次数明显下降。智能车运行的稳定性与蛇行现象明显提升与减少。
 
 
 ## 5.2 避障系统的设计与实现
 在自动驾驶中，当车辆遇到车道突然侵入时，车辆的避障显得尤为重要。本章将分析智能车前方的激光雷达所采集到的车辆周围数据，设计智能车避障算法进行智能车周围障碍的判断，并对当前障碍做出反应最终实现智能车的避障动作。
-
 ### 5.2.1 激光雷达数据分析
 激光雷达收集到的数据来自于智能车所搭载的思岚 A1 雷达。激光雷达设定扫描频率为5.5HZ设定为标准工作模式。激光雷达所扫描的数据结构主要分为9个部分，分别为头部分，角度最大值，角度最小值，每次扫描的角度差，每次扫描的时间差，总扫描时间，距离最大值，距离最小值和距离列表。
 根据起始部分的角度最大值和角度最小值以及每次扫描角度差可以计算出在距离列表中每一个距离所对应的旋转角。旋转角和距离经过极坐标系与笛卡尔坐标系的转换得到当前车辆周围的环境状态。且每次扫描坐标原点为智能车点位。
+<div align=center>
+<img width="400" alt="截屏2024-11-09 20 31 38" src="https://github.com/user-attachments/assets/ace2a20a-b182-4995-b350-c40f440baf81">
+<img/></div>
 
 ### 5.2.2 避障系统的设计
 为了避免当车辆遇到障碍物后继续前进，与障碍物距离不断减小，当距离障碍物过近时无法完成完整的避障动作，所以根据此种情况设定大于车辆中心到边缘距离的最大预警值。当车辆到障碍物的距离小于最大预警值时进行避障。实现前进，后退，左转与右转四个方向的运动，避免与障碍物发生接触。为了增强车辆对周围环境的感知能力，根据车辆尺寸分别对智能车正前方向，智能车正后方向，智能车正左方向以及智能车正右方向的障碍物进行划分，在智能车正前方以及正右方向和正左方向划分的区间上找到与智能车最近障碍物的距离。
-
+<div align=center>
+<img width="400" alt="截屏2024-11-09 20 31 44" src="https://github.com/user-attachments/assets/1efc455f-f86b-42f4-ad17-c4cba5524ba9">
+<img/></div>
 当智能车与障碍物的距离达到设定的最大预警值时，车辆线速度将设置为0，并根据车辆正左侧与正右侧与障碍物距离的大小进行车辆运行方向的调整。若车辆左侧距离大于车辆右侧距离则智能车将向左侧以设定的速度进行左侧转向；若车辆右侧的距离大于车辆左侧距离则智能车将向右侧以设定的速度进行右侧转向。当智能车与障碍物的距离大于设定的最大预警值时则停止转向并以设定的默认线速度向前前进。
-
+<div align=center>
+<img width="400" alt="截屏2024-11-09 20 31 52" src="https://github.com/user-attachments/assets/9ffa1025-99a6-410b-b135-d41f84960d97">
+<img/></div>
 
 ### 5.2.3 避障系统的实现
-根据避障逻辑从而实现智能车的行车避障，如图69所示智能车处于开始行驶时刻，如图紫色代表智能车所在的位置，绿色部分代表设定的智能车预警值距离，若障碍物在智能车预警值距离内则标记为红色，而蓝色代表通过坐标变换激光所扫描到的障碍物。由于智能车正前方距离障碍物的距离大于预警值范围，所以在智能车以默认线速度前进到避障过程B所在的位置如图70所示。当在次位置扫描到前方障碍物的距离小于等于智能车预警值距离时，智能车停止前进。由于激光雷达测得智能车左侧距离大于右侧距离时，智能车进行默认角速度向左选择到避障过程C所在的位置如图71所示。当智能车正前方距离再一次大于设定的预警距离时，智能车停止转向并恢复默认线速度向前行驶到达避障过程D所在位置如图72所示。从而完成智能车整个避障过程。
-
+根据避障逻辑从而实现智能车的行车避障，如图69所示智能车处于开始行驶时刻，如图紫色代表智能车所在的位置，绿色部分代表设定的智能车预警值距离，若障碍物在智能车预警值距离内则标记为红色，而蓝色代表通过坐标变换激光所扫描到的障碍物。由于智能车正前方距离障碍物的距离大于预警值范围，所以在智能车以默认线速度前进到避障过程B所在的位置如图70所示。当在次位置扫描到前方障碍物的距离小于等于智能车预警值距离时，智能车停止前进。由于激光雷达测得智能车左侧距离大于右侧距离时，智能车进行默认角速度向左选择到避障过程C所在的位置如图71所示。当智能车正前方距离再一次大于设定的预警距离时，智能车停止转向并恢复默认线速度向前行驶到达避障过程D所在位置如图所示。从而完成智能车整个避障过程。
+<div align=center>
+<img width="400" alt="截屏2024-11-09 20 32 04" src="https://github.com/user-attachments/assets/06e022e3-39e4-4e23-84fa-24167732fd01">
+<img/></div>
 
 ## 5.3 红绿灯识别系统的设计与实现
 在实际行车过程中，红绿灯在日常行车场景中是占比最多的一种行车状况。本章主要分析了红绿灯的基本参数，并结合当前车辆运行环境设计红绿灯颜色的识别以及距离的判断。从而在一定条件下使智能车对当前信号灯进行正确判断，进一步完善智能车自动驾驶能力。
 
 ### 5.3.1 红绿灯数据分析
 红绿灯主要由红，黄，绿三种二极管显示颜色，并加入红绿灯倒计时屏幕。运行电压为3V。其中红灯和绿灯时间都为9秒黄灯时间为3秒，整个红绿灯高为8cm。当红绿灯开始运行时，每一次先从绿色灯开始，然后再到黄色灯最后到红色灯显示，且在每种灯显示的后3秒，灯的显示形式从长亮变为每1秒闪烁四下直至下一个颜色的灯亮起。
-
-
-
+<div align=center>
+<img width="400" alt="截屏2024-11-09 20 35 11" src="https://github.com/user-attachments/assets/f1dfda4b-710f-4498-a259-870fbee6cc36">
+<img/></div>
 智能车前方行驶的路况图像主要由前方摄像头进行拍摄。摄像头距离地面高度为18cm。由于摄像头拍摄的角度，智能车行驶道路的宽度以及红绿灯本身大小的限制。所以将红绿灯设置在行驶车道的右侧。方便摄像头的捕捉与识别，确保摄像头的视野范围内存在完整的红绿灯信号。摄像头拍摄得到的图像长度为640像素高度为480像素，图像通道为RGB三通道。
 
 ### 5.3.2 红绿灯识别系统的设计
 当智能车行驶到有红绿灯所在的路段时，为了达到与现实世界相同的逻辑判断，实现智能车遇到红灯时停止行驶，绿灯时开始行驶的功能，首先建立ROS图像的传输通道并对摄像头所拍摄的图像进行色彩颜色的转换，使图像原本的RGB颜色转换成HSV颜色范围。当红灯、绿灯或黄灯亮起时光线由于灯的周围的白色覆盖件使灯周围呈现较多的白色，针对由于光线所产生的白色范围进行提取并获得当前对应的遮罩层。结合相机标定数据对遮罩层图像进行图像畸变矫正，在此基础上结合所识别出红绿灯在图像中的具体位置，通过运用相似三角形的原理，计算出智能车当前位置与红绿灯之间的距离。若当前距离大于设定的距离，则让智能车保持继续的形式；若当前距离小于等于设定距离，则对具体信号进行识别。对遮罩中最大的区域进行图像的裁剪并进行HSV图像颜色空间的转换。通过设定红色，绿色和黄色的颜色范围进一步确定红绿灯当前为哪一种信号。当检查出的信号为绿灯或空时保持智能车继续行驶，若检查出的信号为红灯或黄灯时则使智能车停止行驶直到信号灯变为绿色。
-
+<div align=center>
+<img width="400" alt="截屏2024-11-09 20 35 25" src="https://github.com/user-attachments/assets/494f47d5-d2d0-405f-9ad2-b9f70e7c0315">
+ <div align=center>
+<img/></div>
 
 ### 5.3.3 红绿灯识别系统的实现
 为了更好的验证红绿灯系统的可行性，依托于相机标定数据采集系统采集包括三种红绿灯信号的共13张图片进行验证。根据红绿灯识别系统的设计，由于不同颜色的灯光所在红绿灯周围的覆盖件上反光都为白色。因此，通过转换原始图像的色域对白色区域进行图像提取。根据图75和图76可以清晰的看到灯珠由于发光导致周围颜色为近似白色。并进行白色区域的边缘检测得到面积最大的白色区域。所对应的面积最大的白色区域也就为当前具体哪一个颜色的信号灯在使用。
-
+ <div align=center>
+<img width="195" alt="截屏2024-11-09 20 35 34" src="https://github.com/user-attachments/assets/aefcb5f7-8520-44ad-8a90-75eac3e4123c">
+<img width="195" alt="截屏2024-11-09 20 35 41" src="https://github.com/user-attachments/assets/da592bbd-4cef-4de4-9349-e6d1fdfa4b2b">
+<img width="195" alt="截屏2024-11-09 20 35 47" src="https://github.com/user-attachments/assets/f822a516-76a0-4d77-a466-2ede0795cd00">
+<img/></div>
 
 当具体识别到信号时，根据图77的识别结果，将所框选的区域进行截取，截取出具体的信号类别，之后再次使用颜色范围提取的方法，划分红色，黄色以及绿色范围进行颜色判断，若红色范围大于黄色与绿色则为红灯，若黄色颜色范围大于红色与绿色则为黄灯，绿色亦然，根据此判断得到具体的信号标识。如图78，图79，图80所示为截取到的红灯，黄灯与绿灯。
-
+ <div align=center>
+<img width="195" alt="截屏2024-11-09 20 35 54" src="https://github.com/user-attachments/assets/2da1f79f-f6c1-41f4-8c61-9ebbec30ab4a">
+<img width="195" alt="截屏2024-11-09 20 35 59" src="https://github.com/user-attachments/assets/ffaeb248-5ce7-4aba-923d-b3879dadcea3">
+<img width="195" alt="截屏2024-11-09 20 36 05" src="https://github.com/user-attachments/assets/a62c5dae-71ae-4e53-b853-e1d07a850648">  
+<img/></div>
 
 通过截取到的不同颜色的信号灯进行当前智能车与信号灯之间距离的判断。根据针孔成像原理所知真实时间与相机世界比例呈相似三角形关系。通过已知的红绿灯高度和相机内参数焦距和图像呈现的像素点可以得到智能车距离红绿灯的大致距离。通过红绿灯的距离进而判断智能车的停车位置。如图为红绿灯的识别结果。红色字代表智能车识别红绿灯的信号种类，蓝色代表智能车距离红绿灯的距离。
+ <div align=center>
+ <img width="400" alt="截屏2024-11-09 20 36 12" src="https://github.com/user-attachments/assets/54a12ee6-438b-4383-a6ca-aa07c0dbd53f">
+<img/></div>
 
 ## 5.4 自动驾驶整体系统的设计与实现
 ### 5.4.1 自动驾驶整体系统的设计
 根据已实现的功能对其整合从而实现自动驾驶整体体系。在自动驾驶众多传感器中，设定传感器功能控制优先级至关重要。这将取决当车辆周围出现情况时，车辆会依据最高级别传感器进行行为决策，如当行驶至红绿灯路口时前方信号灯变为红色，突然冲出非机动车。此时，车辆周围毫米波雷达就作为最高优先级。行车电脑会对其进行数据分析并做出决策，当威胁消除时在进行红绿灯最高优先级的判断。
 根据本文所要实现的三个功能进行功能优先级的化分。根据设定的模型行车环境从远到近进行智能车功能等级的排序，分别是红绿灯等级大于避障系统等级，避障系统等级大于自动行车系统。
-
+ <div align=center>
+  <img width="400" alt="截屏2024-11-09 20 39 44" src="https://github.com/user-attachments/assets/84352889-caa9-4be9-af52-177915a61ba3">
+<img/></div>
 当自动驾驶整体系统启动时，首先通过激光雷达数据通路和ROS图像传输通道获得智能车前方激光雷达扫描数据与摄像头捕捉图像。当红绿灯识别系统识别到红绿灯后对具体信号进行判断。若此时红绿灯信号为不可通行时则等到可通行信号的开放。当红绿灯识别系统反馈的信号为可通行或无信号灯时，则避障系统运行结果有效。当避障系统检查到前方有障碍物时则启动避障算法直到障碍物在所设置的阈值之外。在避障系统没有检测到障碍物时自动行车系统接管智能车控制并完成整体的车辆运行，达到最终的自动驾驶整体系统的建立。
 
 ### 5.4.2 自动驾驶整体系统的实现
 自动驾驶整体系统的实现是依托于以上自动行车系统，避障系统以及红绿灯识别系统所实现的。为了更好的达到各个系统的完美融合，所以在初始场景的设定下加入障碍物与信号灯。
 在原有场景下设置避障环境和红绿灯识别环境。激光雷达通过扫描周围环境，智能车通过避障系统实现智能车在当前设置的环境下通过障碍区域。通过智能车前置摄像头识别当前信号灯的类别，智能车通过判断信号灯的类别做出相应的动作。根据加入的避障区域与红绿灯识别区域划分出不同环境下智能车的功能区间。
-
+ <div align=center>
+  <img width="400" alt="截屏2024-11-09 20 39 53" src="https://github.com/user-attachments/assets/8db21d09-273d-4806-bb33-67357b3a0b01">
+<img/></div>
 智能车测试环境部署结束后，根据自动驾驶整体系统的设计的功能优先级进行整体系统的实现。为了使各部分传感器协调工作，避免由于各个功能在运行时对计算资源的占用而发生系统阻塞，内存溢出的问题。以及个功能部件的响应时间不一致导致智能车不能及时做出反应的问题。进一步优化由于硬件不足而导致的计算错误，由于ROS系统本身自带服务(Services)来进行并行数据交互，所以将各个功能部件进行单独计算并将各部分计算结果返回给处理整体数据的部分，经过计算，运行行驶算法，得到智能车运行速度，并最终实现智能车的正确行驶。
 每一个智能车功能都进行独立于其他功能的运行，自动行驶系统会根据当前路况进行数据处理，运行模型得到的速度，并最终将智能车行驶所需要的角速度与线速度发布到主节点上，红绿灯识别系统，则根据红绿灯处理算法，订阅前置摄像头图片进行红绿灯信号的识别，并将识别到的信号发布到主节点上。避障系统则通过订阅避障节点，进行数据坐标的转换，并计算出四个方向需要的数据，将四个方向的数据发布到主节点上。最后，通过订阅上面每一个功能节点输出的数据，结合自动驾驶整体系统的设计的功能优先级对障碍，信号和速度进行整体的判断，并将最终得到的速度发布到智能车速度节点上实现智能车的运行。
-
-根据设计的自动驾驶整体系统与智能车测试环境完成以后，对智能车进行实际测试，以验证智能车各个功能部件运行的完整度和自动驾驶整体系统决策的正确性，实现智能车在实际测试中的自动行驶，障碍避障和信号识别。
-
-将智能车放到起始位置，启动自动行驶整体系统以及智能车轨迹记录系统和智能车摄像系统，对智能车在测试过程中遇到的路况以及行驶轨迹进行记录，不仅方便智能车在测试过程中自动行驶模型对当前路况判断准确性的评估比较，还进一步记录了第三视角智能车实际的行驶轨迹，以更加直观的视角方便对智能车行驶情况进行整体评估。在自动行驶整体系统启动以后，智能车将自行对识别到的路况产生相应的判断，对信号灯信息进行判别和对障碍物进行避障动作，依托于以上三种运行功能构建智能车自动行驶系统。如图为智能车在测试环境下的行驶轨迹。
-
-
+ <div align=center>
+ <img width="400" alt="截屏2024-11-09 20 40 03" src="https://github.com/user-attachments/assets/c6955384-f578-4a2a-8e52-0838403cf48a">
+<img/></div>
+根据设计的自动驾驶整体系统与智能车测试环境完成以后，对智能车进行实际测试，以验证智能车各个功能部件运行的完整度和自动驾驶整体系统决策的正确性，实现智能车在实际测试中的自动行驶，障碍避障和信号识别。将智能车放到起始位置，启动自动行驶整体系统以及智能车轨迹记录系统和智能车摄像系统，对智能车在测试过程中遇到的路况以及行驶轨迹进行记录，不仅方便智能车在测试过程中自动行驶模型对当前路况判断准确性的评估比较，还进一步记录了第三视角智能车实际的行驶轨迹，以更加直观的视角方便对智能车行驶情况进行整体评估。在自动行驶整体系统启动以后，智能车将自行对识别到的路况产生相应的判断，对信号灯信息进行判别和对障碍物进行避障动作，依托于以上三种运行功能构建智能车自动行驶系统。如图为智能车在测试环境下的行驶轨迹。
+<div align=center>
+<img width="250" alt="截屏2024-11-09 20 40 10" src="https://github.com/user-attachments/assets/f6a58ef7-b5d9-41f0-b03e-8cc1f493b40a">
+<img width="250" alt="截屏2024-11-09 20 40 15" src="https://github.com/user-attachments/assets/7151ffb3-4b68-4016-a053-d81b2f5635e4">
+<img/></div>
+<div align=center>
+<img width="400" alt="截屏2024-11-09 20 40 21" src="https://github.com/user-attachments/assets/524edfe1-ec58-44be-b740-cee06fadfa51">
+<img/></div>
 
 根据智能车在测试环境下的运行轨迹。可以看到，智能车在整体运行中，随着从起始位置开始逐渐到结束位置，智能车的轨迹的颜色不断的加深。在智能车自动行驶部分中，智能车不论是在直行道路与弯道轨迹都表现的非常光滑，只有在一小部分场景下智能车才进行了车身姿态的修正，在红绿灯识别系统的情况下由于智能车检测到前方信号灯为红色信号时进行了停车操作如图85红绿灯识别停车，才使在红绿灯识别位置产生了明显的颜色差异。在行驶到避障系统中时如图激光雷达避障，由于小车运行避障系统如图86，避障系统设置默认速度过慢才导致了避障的范围内智能车行驶轨迹的颜色的快速加深，由于智能车需要时时刻刻对周围环境进行数据采集并进行计算判断，所以在进行避障的第一个右转过程中，智能车表现出对周围环境的判断，并没有过快的执行行驶策略。而是进一步调整车身姿态，以最优的计算结果驱动智能车决策从而使智能车通过避障行驶区域。后根据自动行驶系统的计算结果引导智能车返回开始起点。因此在此环境下实现了智能车的自动行驶，红绿灯识别以及避障行驶和分级控制功能的集合。
  
-# 结论
+# 6.结论
 本文自动驾驶项目成功实现了自动行驶、红绿灯识别、避障以及智能车道路判断等关键功能。尽管这些功能各自独立，但在构建自动驾驶系统的过程中，它们都是必不可少的。在自动行驶功能的实现过程中，初期阶段的行车数据获取至关重要，因为一个优质的数据集对后续的模型训练起到了决定性的作用。本次实验的环境设置为理想状态，道路周围颜色较深，包含直角弯道、回头弯道、直行道和斜弯道等多种路况。然而，由于硬件运行频率的不同，数据采集过程中的速度与图像存在时间差，这可能导致车辆无法及时做出判断。在模型训练过程中，选择了小体量模型以避免内存阻塞，但由于时间限制，模型的选择与测试还不够充分，无法实现准确可靠的运行结果。在避障系统的构建中，只对智能车周围四个方向的数据进行了分析，避障算法设计较为简单，基本实现了智能车在有障碍物下的避障行驶。未来的改进中，可以从更复杂的方向和层次进行智能车周围环境的判断，进一步提高智能车对障碍物的判断力和决策正确性。
 在红绿灯识别系统中，我们使用了颜色空间的转换，但这种方法在非特定环境下可能会造成红绿灯信号的识别错误。未来，可以考虑加入Yolo V5,transformer，内容识别等模型，以提高系统在真实环境下的泛化能力。此外，本次自动驾驶系统主要依赖于以上三种功能的整合，但各个系统之间的协调也是至关重要的。在本项目中，我们主要采用纵向优先级的方式对自动行驶系统中的功能进行分级划分。然而，在实际情况中，自动驾驶系统需要在不同路况下进行相应优先级的调整，同时在优先级下，自动驾驶各种传感器的数据需要相互流通。处理单元需要对这一时刻下的数据进行并行计算，才能保证决策思路与优先级发挥出相应的作用。总的来说，通过本次实验，实现了自动驾驶的一小部分功能，并通过实际测试得到了预期的结果。在智能车自动驾驶的搭建过程中，软件与硬件的协同工作至关重要。未来，将继续优化和完善自动驾驶系统，以实现更多的功能，并提高系统的稳定性和可靠性。随着技术的不断进步，自动驾驶将会在未来的交通出行中发挥越来越重要的作用。
 
 
 
 
-
-
-
+ Thank you for reading and correcting .Feel free to ask question.
+Created by Jia zimo(yiwei)/Zhang peihua. E-mail:15832120175@163.com
 
 
