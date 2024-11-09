@@ -35,7 +35,7 @@ Realize automatic driving, traffic light recognition, and obstacle avoidance on 
 所设计的自动驾驶模拟环境在宽度为420厘米长度460厘米的矩形上进行车道设计。为了进一步保证模拟实际行车情况所涉及到的路况，设计车道宽度为35厘米对应1.5倍车身宽度。并从两条黑色标记点开始以逆时针顺序运行。共有6个直角弯，1个回头弯，2个折角弯和7条直道组成。
 
 <div align=center>
-<img width="400" alt="截屏2024-11-08 23 14 58" src="https://github.com/user-attachments/assets/760d7d55-adda-479f-be52-e114ccbccebd">
+<img width="353" alt="截屏2024-11-09 11 03 18" src="https://github.com/user-attachments/assets/e79cd77c-63ba-4d45-8718-8e7cbd2095d6">
 <img/></div>
 
 (The designed autonomous driving simulation environment performs lane design on a rectangle with a width of 420 centimeters and a length of 460 centimeters. In order to further ensure the road conditions involved in simulating actual driving situations, the designed lane width is 35 centimeters, corresponding to 1.5 times the width of the vehicle body. And run in counterclockwise order starting from the two black marked points. There are a total of 6 right angle bends, 1 turn back bend, 2 corner bends, and 7 straight paths.)
