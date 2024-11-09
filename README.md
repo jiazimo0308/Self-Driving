@@ -27,12 +27,13 @@ Realize automatic driving, traffic light recognition, and obstacle avoidance on 
 
 
 
+
 (In order to achieve the safety and reliability of autonomous driving, extensive data collection and testing are essential. However, there are some issues with data collection and testing on real roads, such as high costs, time constraints, safety risks, etc. Therefore, establishing an autonomous driving simulation environment has become an effective solution. The automatic driving simulation environment simulates various scenes and situations in the real world through simulation technology to develop and test the auto drive system. In this simulation environment, virtual road networks, vehicle models, and sensors can be used to simulate traffic conditions on real roads. By collecting and analyzing the data in the simulation environment, the performance and stability of the auto drive system in different situations can be evaluated.Firstly, the design of an autonomous driving simulation environment road is carried out to achieve basic road driving. The intelligent vehicle makes forward, backward, left turn, and right turn actions based on the current road conditions.)
 
 所设计的自动驾驶模拟环境在宽度为420厘米长度460厘米的矩形上进行车道设计。为了进一步保证模拟实际行车情况所涉及到的路况，设计车道宽度为35厘米对应1.5倍车身宽度。并从两条黑色标记点开始以逆时针顺序运行。共有6个直角弯，1个回头弯，2个折角弯和7条直道组成。
 
 <div align=center>
-<img width="385" alt="截屏2024-11-08 23 14 58" src="https://github.com/user-attachments/assets/760d7d55-adda-479f-be52-e114ccbccebd">
+<img width="400" alt="截屏2024-11-08 23 14 58" src="https://github.com/user-attachments/assets/760d7d55-adda-479f-be52-e114ccbccebd">
 <img/></div>
 
 (The designed autonomous driving simulation environment performs lane design on a rectangle with a width of 420 centimeters and a length of 460 centimeters. In order to further ensure the road conditions involved in simulating actual driving situations, the designed lane width is 35 centimeters, corresponding to 1.5 times the width of the vehicle body. And run in counterclockwise order starting from the two black marked points. There are a total of 6 right angle bends, 1 turn back bend, 2 corner bends, and 7 straight paths.)
@@ -40,7 +41,9 @@ Realize automatic driving, traffic light recognition, and obstacle avoidance on 
 ## 3.2 智能车平台(Intelligent car platform)
 自动驾驶智能车平台的搭建基于幻宇自研的一款配有麦克纳姆轮的四驱遥控车，其上安装的硬件系统结构如图11所示。其中主板选用NVIDIA Jetson B01开发版，该开发版采用ARM架构。搭载了四核心Cortex-A57处理器，具有128核Maxwell GPU及4GB LPCDDR内存。支持多种AI框架与算法，兼顾了小体型和大算力。下控制器选用幻宇自研主板，负责以串口通信的方式接收上方主板信号，并以PWM波的形式通过主板芯片传递给下游的四个编码电机，借此控制智能车底盘运动。直流12V编码驱动电机为智能车运行提供强大驱动力。对于感知模块，考虑到后期数据集所需数据的形式，通过使用板载的传感器方案，其中包括一个奥比中光所研发的具有感知景深的双目摄像头和一个用于辅助矫正的自带IMU以及思岚 A1 激光雷达。传感模块可给出车身纵向速度和角速度并将这两种状态量传递给主板。传感器模块可以做到10HZ的测量频率。其中12V锂电池通过下主板对上主板进行供电，电机主要由下主板的供电端口进行12V供电。车辆控制算法的软件编写基于ROS系统，其中车辆控制端主要通过geometry_msgs功能包和sensor_msgs功能包。控制模块的运算频率设定为10Hz。即在实际过程中智能车对前方路况的判断并做出行动的时间可以控制在100ms内，体现出自动驾驶算法的实时性。
 
-
+<div align=center>
+<img width="400" alt="截屏2024-11-09 09 03 11" src="https://github.com/user-attachments/assets/83cd50e9-f77e-449a-b008-9f681fc5c0f7">
+<img/></div>
 
 (The construction of the autonomous driving intelligent car platform is based on a four-wheel drive remote control car equipped with Mecanum wheels developed by Huanyu. The hardware system structure installed on it is shown in Figure 11. The motherboard uses NVIDIA Jetson B01 development version, which adopts ARM architecture. Equipped with a quad core Cortex-A57 processor, featuring a 128 core Maxwell GPU and 4GB LPCDDR memory. Supports multiple AI frameworks and algorithms, balancing small size and high computing power. The lower controller uses a self-developed motherboard from Huanyu, which is responsible for receiving signals from the upper motherboard through serial communication and transmitting them in the form of PWM waves to the four encoding motors downstream through the motherboard chip, thereby controlling the motion of the intelligent vehicle chassis. The DC 12V encoded drive motor provides powerful driving force for the operation of intelligent vehicles. For the perception module, considering the form of data required for the later dataset, an onboard sensor scheme is used, which includes a binocular camera with perception depth developed by Obi Zhongguang, a built-in IMU for auxiliary correction, and a Silan A1 laser radar. The sensing module can provide the longitudinal velocity and angular velocity of the vehicle body and transmit these two state variables to the motherboard. The sensor module can achieve a measurement frequency of 10Hz. The 12V lithium battery supplies power to the upper motherboard through the lower motherboard, while the motor is mainly powered by the 12V port on the lower motherboard. The software development of the vehicle control algorithm is based on the ROS system, where the vehicle control end mainly uses the geometriy_msgs and sensor-msgs function packages. The operating frequency of the control module is set to 10Hz. In the actual process, the time for intelligent vehicles to judge and take action on the road conditions ahead can be controlled within 100ms, reflecting the real-time performance of autonomous driving algorithms.)
 
