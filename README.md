@@ -44,7 +44,9 @@ Realize automatic driving, traffic light recognition, and obstacle avoidance on 
 自动驾驶智能车平台的搭建基于幻宇自研的一款配有麦克纳姆轮的四驱遥控车，其上安装的硬件系统结构如图11所示。其中主板选用NVIDIA Jetson B01开发版，该开发版采用ARM架构。搭载了四核心Cortex-A57处理器，具有128核Maxwell GPU及4GB LPCDDR内存。支持多种AI框架与算法，兼顾了小体型和大算力。下控制器选用幻宇自研主板，负责以串口通信的方式接收上方主板信号，并以PWM波的形式通过主板芯片传递给下游的四个编码电机，借此控制智能车底盘运动。直流12V编码驱动电机为智能车运行提供强大驱动力。对于感知模块，考虑到后期数据集所需数据的形式，通过使用板载的传感器方案，其中包括一个奥比中光所研发的具有感知景深的双目摄像头和一个用于辅助矫正的自带IMU以及思岚 A1 激光雷达。传感模块可给出车身纵向速度和角速度并将这两种状态量传递给主板。传感器模块可以做到10HZ的测量频率。其中12V锂电池通过下主板对上主板进行供电，电机主要由下主板的供电端口进行12V供电。车辆控制算法的软件编写基于ROS系统，其中车辆控制端主要通过geometry_msgs功能包和sensor_msgs功能包。控制模块的运算频率设定为10Hz。即在实际过程中智能车对前方路况的判断并做出行动的时间可以控制在100ms内，体现出自动驾驶算法的实时性。
 
 <div align=center>
-<img width="400" alt="截屏2024-11-09 09 03 11" src="https://github.com/user-attachments/assets/95403443-c15a-4192-8b0d-3132dbbd95af">
+<img width="400" alt="截屏2024-11-09 13 17 58" src="https://github.com/user-attachments/assets/3ddacd6f-520e-435d-b267-4120e34751e5">
+<img/></div>
+<div align=center>
 <img width="400" alt="截屏2024-11-09 11 17 12" src="https://github.com/user-attachments/assets/703ce7c2-3c8d-4856-b848-936718ca24b1">
 <img/></div>
 
