@@ -26,7 +26,7 @@ Realize automatic driving, traffic light recognition, and obstacle avoidance on 
 为了实现自动驾驶的安全性和可靠性，大量的数据收集和测试是必不可少的。然而，在真实道路上进行数据收集和测试存在一些问题，例如高昂的成本、时间限制、安全风险等。因此，建立自动驾驶模拟环境成为了一种有效的解决方案。自动驾驶模拟环境是通过仿真技术来模拟现实世界中的各种场景和情况，以进行自动驾驶系统的开发和测试。在这个模拟环境中，可以利用虚拟的道路网络、车辆模型和传感器模拟真实道路上的交通情况。通过收集和分析模拟环境中的数据，可以评估自动驾驶系统在不同情况下的性能和稳定性。首先，进行自动驾驶模拟环境道路的设计，实现基本的道路行驶，智能车根据当前路况做出前进，后退，左转与右转动作
 
 <div align=center>
-<img width="400" alt="截屏2024-11-09 11 34 30" src="https://github.com/user-attachments/assets/ed445929-7c38-4b3d-824e-ddb650c4f61d">
+<img width="250" alt="截屏2024-11-09 11 34 30" src="https://github.com/user-attachments/assets/ed445929-7c38-4b3d-824e-ddb650c4f61d">
 <img/></div>
 
 
