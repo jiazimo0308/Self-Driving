@@ -26,9 +26,8 @@ Realize automatic driving, traffic light recognition, and obstacle avoidance on 
 为了实现自动驾驶的安全性和可靠性，大量的数据收集和测试是必不可少的。然而，在真实道路上进行数据收集和测试存在一些问题，例如高昂的成本、时间限制、安全风险等。因此，建立自动驾驶模拟环境成为了一种有效的解决方案。自动驾驶模拟环境是通过仿真技术来模拟现实世界中的各种场景和情况，以进行自动驾驶系统的开发和测试。在这个模拟环境中，可以利用虚拟的道路网络、车辆模型和传感器模拟真实道路上的交通情况。通过收集和分析模拟环境中的数据，可以评估自动驾驶系统在不同情况下的性能和稳定性。首先，进行自动驾驶模拟环境道路的设计，实现基本的道路行驶，智能车根据当前路况做出前进，后退，左转与右转动作
 
 <div align=center>
-<img width="250" alt="截屏2024-11-09 11 34 30" src="https://github.com/user-attachments/assets/ed445929-7c38-4b3d-824e-ddb650c4f61d">
+<img width="400" alt="截屏2024-11-09 11 34 30" src="https://github.com/user-attachments/assets/ed445929-7c38-4b3d-824e-ddb650c4f61d">
 <img/></div>
-
 
 (In order to achieve the safety and reliability of autonomous driving, extensive data collection and testing are essential. However, there are some issues with data collection and testing on real roads, such as high costs, time constraints, safety risks, etc. Therefore, establishing an autonomous driving simulation environment has become an effective solution. The automatic driving simulation environment simulates various scenes and situations in the real world through simulation technology to develop and test the auto drive system. In this simulation environment, virtual road networks, vehicle models, and sensors can be used to simulate traffic conditions on real roads. By collecting and analyzing the data in the simulation environment, the performance and stability of the auto drive system in different situations can be evaluated.Firstly, the design of an autonomous driving simulation environment road is carried out to achieve basic road driving. The intelligent vehicle makes forward, backward, left turn, and right turn actions based on the current road conditions.)
 
@@ -52,23 +51,19 @@ Realize automatic driving, traffic light recognition, and obstacle avoidance on 
 
 (The construction of the autonomous driving intelligent car platform is based on a four-wheel drive remote control car equipped with Mecanum wheels developed by Huanyu. The hardware system structure installed on it is shown in Figure 11. The motherboard uses NVIDIA Jetson B01 development version, which adopts ARM architecture. Equipped with a quad core Cortex-A57 processor, featuring a 128 core Maxwell GPU and 4GB LPCDDR memory. Supports multiple AI frameworks and algorithms, balancing small size and high computing power. The lower controller uses a self-developed motherboard from Huanyu, which is responsible for receiving signals from the upper motherboard through serial communication and transmitting them in the form of PWM waves to the four encoding motors downstream through the motherboard chip, thereby controlling the motion of the intelligent vehicle chassis. The DC 12V encoded drive motor provides powerful driving force for the operation of intelligent vehicles. For the perception module, considering the form of data required for the later dataset, an onboard sensor scheme is used, which includes a binocular camera with perception depth developed by Obi Zhongguang, a built-in IMU for auxiliary correction, and a Silan A1 laser radar. The sensing module can provide the longitudinal velocity and angular velocity of the vehicle body and transmit these two state variables to the motherboard. The sensor module can achieve a measurement frequency of 10Hz. The 12V lithium battery supplies power to the upper motherboard through the lower motherboard, while the motor is mainly powered by the 12V port on the lower motherboard. The software development of the vehicle control algorithm is based on the ROS system, where the vehicle control end mainly uses the geometriy_msgs and sensor-msgs function packages. The operating frequency of the control module is set to 10Hz. In the actual process, the time for intelligent vehicles to judge and take action on the road conditions ahead can be controlled within 100ms, reflecting the real-time performance of autonomous driving algorithms.)
 
-
-
-
-
 ## 3.3 计算平台（Computing platform）
 由于本次实验的数据集主要由图像数据组成，其特点是数据量大、数据具有高维性或结构性。这对计算机的中央处理器以及图形处理器提出了较高的要求。为了满足对计算资源的需求，我们选择了两台高性能计算机进行数据处理与模型训练。
 首先，选用了一台搭载M2 PRO芯片的计算机，该机具有10核中央处理器和16核图形处理器，以及16GB四通道内存。这台计算机主要负责整体框架搭建，实验尝试性验证以及部分训练任务。M2 PRO芯片的强大计算能力和高效的内存管理，使得它能够快速处理大量的图像数据，提高实验效率。其次，选用了一台惠普Z600工作站，该工作站搭载了双核至强E5640中央处理器，双路DDR4 32GB内存和1TB固态硬盘，以及一块特斯拉丽台p100显卡，该卡拥有24GB的显存。这台工作站主要用于处理大规模的多维数据和模型训练的任务。双中央处理器和大容量的内存使工作站能够连续处理大规模的图像数据，1TB的固态硬盘则提供了足够的空间，保证了数据处理与模型训练的顺利进行，进一步保证了计算的可靠性。
  
-
-
 # 4 车辆操控与数据处理
 ## 4.1 操控系统设计
 数据采集分为标定图像数据采和行驶图像与行驶速度的采集。由于不同部分对数据集的要求不同，所以按每种部分的要求分别设计智能车操控系统。并在次基础上设计了行驶轨迹，行车录像等功能，操作方式上主要尝试了电脑端操控与PS2手柄端操控，并最终找到最优的解决方案。
 ### 4.1.1 操控系统的分析与选取
 在本次试验基于机器人操作系统ROS上，采用Python语言对智能车的操作进行设计。分别设计了电脑键盘端智能车操控系统与PS2手柄端智能车操作系统。从而实现智能车前进，后退，左转，右转。并在此基础上实现相对应的数据采集功能。
 在电脑端，通过电脑端键盘中“w”,“s”,“a”,“d”键位实现对智能车的前进，后退，左转与右转。在实际搭建过程中使用到了pynput,pygame,curses等库进行测试，由于在实际运行中部分库只能在一个刷新频率下读取一个键盘输入值，因此在一个刷新周期中智能车只能进行一个动作，从而导致智能车运行卡顿不畅。为了保证智能车动作的连贯性，放弃电脑端的设计进而转向PS2手柄端的智能车操控系统。PS2手柄端正面共有13个键位。其中三个为内置功能，其余为可开发键位。为了更好的反应智能车实际的运行情况，选取两个遥感键位作为实现智能车前进，后退，左转，右转的真实运行情况。其余键位根据实际的数据采集需要进行合理的开发。首先确定每个键位在ROS系统中所代表的位置在哪里。根据ROS中的节点joy_node进行打印.
-
+<div align=center>
+<img width="400" alt="截屏2024-11-09 13 24 53" src="https://github.com/user-attachments/assets/217009c2-99e8-4a57-8308-fd4ddddab34d">
+<img/></div>
 键位信息设计智能车的操控系统,实现智能车的前进，后退左转与右转以及智能车的三种运行速度的切换。在运行开始前,设置初始基础速度为0（base_speed=0）,遥感手柄的axes[7]左右两个按键为智能车实现三种运行速度的切换按键，左按键用于加速调节,右按键用于减速调节，且调节的最大值为3。智能车的前进力度与转弯力度由遥感手柄的axes[1]与axes[2]的两个参数linear_speed和angular_speed控制，最后通过速度综合控制函数得到最终行驶的线速度与角速度。
 
 ### 4.1.2 数据采集系统设计
