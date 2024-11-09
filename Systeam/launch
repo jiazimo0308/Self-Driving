@@ -1,0 +1,10 @@
+<launch>
+  <!-- 启动第一个节点 ,红绿灯识别-->
+  <node pkg="ps2_teleop" type="lightdec.py" name="light_node" output="screen" />
+  <!-- 启动第二个节点 ,自动驾驶节点-->
+  <node pkg="ps2_teleop" type="systembizhang.py" name="laser_node" output="screen" />
+   <!-- 启动第三个节点 ,自动驾驶节点-->
+   <node pkg="ps2_teleop" type="seifdriving.py" name="selfdrive_node" output="screen" />
+   <!-- 启动第四个节点 ,完全自动驾驶节点-->
+  <node pkg="ps2_teleop" type="totalall.py" name="autonomous_driving_node" output="screen" />
+</launch>
