@@ -3,7 +3,7 @@
 
 Realize automatic driving, traffic light recognition, and obstacle avoidance on smart cars
 
-# 1 摘要（ABSTRACT）
+# 1 摘要（Abstract）
 本文为实现自动驾驶系统，设计并实施了三个核心功能：自动行车、避障以及红绿灯识别，并最终将这三种功能进行分级合并。系统设计阶段，结合硬件环境，主要设计了智能车行驶、数据采集及模型部署系统。数据采集系统获取相机标定板数据以及行驶信息。经过深度处理，运用计算机视觉算法，处理得到可供模型训练的数据。自动行车系统的设计采用了两种深度学习模型和两种训练任务进行模型训练，并在比较分析的基础上，结合实际运行环境，优化训练结果。避障系统借助激光雷达扫描环境数据，确定车辆四个方向范围，并根据计算结果，指导智能车避障。红绿灯识别系统在新色彩空间下划分颜色区间并提取信号灯发光部分，进一步识别颜色，根据识别颜色控制车辆行动。将上述三种功能在已实现的情况下进行整合，设计功能优先级划分，根据实际硬件环境设计单独功能的运行逻辑。并根据最终设计的结果进行智能车实际部署以实现自动驾驶功能。
 
 (In order to realize the auto drive system, this paper designs and implements three core functions: automatic driving, obstacle avoidance and traffic light recognition. Finally, these three functions are classified and combined. In the system design phase, combined with the hardware environment, the intelligent vehicle driving, data collection, and model deployment system were mainly designed. The data acquisition system obtains camera calibration board data and driving information. After deep processing, computer vision algorithms are used to obtain data that can be used for model training. The design of the automatic driving system adopts two deep learning models and two training tasks for model training, and optimizes the training results based on comparative analysis and actual operating environment. The obstacle avoidance system uses LiDAR to scan environmental data, determine the four directional ranges of the vehicle, and guide intelligent vehicles in obstacle avoidance based on the calculation results. The traffic light recognition system divides color intervals in the new color space and extracts the illuminated parts of the signal lights, further identifying colors and controlling vehicle movement based on the identified colors. Integrate the above three functions in the already implemented situation, design priority division of functions, and design the operation logic of individual functions based on the actual hardware environment. And based on the final design results, deploy the intelligent vehicle to achieve autonomous driving function.)
@@ -142,33 +142,50 @@ Realize automatic driving, traffic light recognition, and obstacle avoidance on 
 
 ##### （2）行车图像数据增强处理
 针对以上在数据集中发现的问题进行相关的图像数据处理，使得图像数据集特征更加突出，提高此后模型训练的精确度。由于车道与车道周围颜色的对比度明显，进一步突出图像当前的特征，通过提高图像对比度进行图像数据增强处理，对比度增强的情况下与原始图像的对比.
-
-
+<div align=center>
+<img width="250" alt="截屏2024-11-09 13 57 21" src="https://github.com/user-attachments/assets/4e9b4b11-54f9-424f-a252-13e8ec200657">
+<img width="250" alt="截屏2024-11-09 13 57 38" src="https://github.com/user-attachments/assets/a2b56891-1028-4540-8f1f-54d6306ed29e">
+<img/></div>
 通过增加对比度，使图像中最暗和最亮部分之间的差异变得更加明显，在原始图像与对比度处理后的图像中红色框可以看到光线强度在此发生了明显的削弱，几乎与光斑周围的颜色融为一体但还是存在并没有完全消除，蓝色框中的路面纹理由于图像对比度的增强变得愈加明显。可以清楚的看到路面纹理的走向，若以当前数据作为训练集则会对训练的模型造成一定影响，可能导致模型泛化能力降低，从而导致模型在实际部署中效果不佳。在无关特征中由于只是图像对比度的改变所以无关特征变化不大，在原始图像与对比度处理后的图像中由黄框所示。
 
 ##### （3）行车图像数据高斯化与灰度化处理
 在当前情况下，为了进一步提高数据质量，减少图像中由于光线强度和路面纹理的影响，使用高斯模糊使图片减少噪声降低细节层次从而保留当前图像最主要的特征。由于当前图像分辨率较大，所以使用了较大的高斯核进行模糊化处理，高斯模糊处理后的结果如下。
-
+<div align=center>
+<img width="347" alt="截屏2024-11-09 13 58 48" src="https://github.com/user-attachments/assets/f509505c-8767-409f-b3fa-d35eca65db4c">
+<img width="349" alt="截屏2024-11-09 13 59 07" src="https://github.com/user-attachments/assets/dea3b412-6127-44dc-baf6-b2ab5c0c3218">
+<img/></div>
 由于车道在图像中占比了较大的部分所以通过高斯模糊化处理后，只是使光线强度与路面纹理发生了扩散，光线强度与路面纹理原本的轮廓并没有由于高斯模型与周围环境相融合，如图中红色框与蓝色框。通过高斯模糊使较远处的无关特征与周围环境的轮廓发生了融合，没有与原图像中无关特征的明显轮廓如图中黄色框所示。同时，通过图像的高斯模糊可以看到图像当前的主要特征如图中绿色线标注部分为车道边界线以及车道边界线的延伸。后针对以上所设计到的三种问题进行针对性处理。
 为了进一步解决上述所存在的问题，使原始图像从三通道图像转变为单通道图像，在保留图像主要特征完整度的前提下进一步优化图像处理效率，降低图像存储和使用的复杂程度，通过图像灰度化实现进一步的处理。在单通道图像下，图像主要特征边缘更加清晰且由于没有其他颜色的干扰使得黄色框中无关特征与周围环境的融合程度更高，红色框中光线强度的干扰得到了进一步的扩散，由于灰度化只是颜色强度的一种改变，所以路面纹理在图像灰度化中没有得到更好的处理如图中蓝色框所示。
 
 ##### （4）行车图像数据二值化处理
 在当前场景中，车道与车道周围所形成的强对比度，且光线强度与路面纹理同时处于浅色车道部分，车道周围为深色部分，二者颜色差异度较大，可以通过图像分割进行真实世界与图像世界的转换。由于车道与车道周围颜色结构相对单一故使用图像二值化方法进行图像分割。针对此选用了全局阈值法，自适应阈值法与OTSU二值化法分别实现对当前图像的分割。
-
-由于场景平台不同方位光照强度的不统一情况，故在全局阈值法中进行了图像灰度的平均值计算，使用计算得到的灰度平均值作为全局阈值。在全局阈值法处理下相比于其他两种处理方法图像较远处的无关特征复杂度明显降低，其次是OTSU二值法，自适应阈值法由于分块计算，当一小块图像与周围图像灰度值较大时，将导致与灰度值较小的区域差别过大，故保留下了过多的无关特征，且在处理光线强度与路面纹理上也发生了此种问题。而其他两种算法由于是基于全局处理所以全局阈值法与OTSU二值法的效果要远远好于自适应阈值法。
-针对全局阈值法与OTSU二值法进行数据处理的相关验证与分析，避免由于在不同实验环境下算法的不稳定性，使得图像处理方案具有泛化能力。在较强的光线下的场景环境中进行图像数据的验证。
-
-
+<div align=center>
+<img width="231" alt="截屏2024-11-09 13 59 34" src="https://github.com/user-attachments/assets/74afcaac-4095-4612-9dcf-5e6ef59da7c3">
+<img width="230" alt="截屏2024-11-09 13 59 53" src="https://github.com/user-attachments/assets/7f76f744-b3d1-4312-9f4b-c05113ab1064">
+<img width="231" alt="截屏2024-11-09 14 00 05" src="https://github.com/user-attachments/assets/3c570824-25b4-4de5-bb73-1007490f6e53">
+ <img/></div>
+由于场景平台不同方位光照强度的不统一情况，故在全局阈值法中进行了图像灰度的平均值计算，使用计算得到的灰度平均值作为全局阈值。在全局阈值法处理下相比于其他两种处理方法图像较远处的无关特征复杂度明显降低，其次是OTSU二值法，自适应阈值法由于分块计算，当一小块图像与周围图像灰度值较大时，将导致与灰度值较小的区域差别过大，故保留下了过多的无关特征，且在处理光线强度与路面纹理上也发生了此种问题。而其他两种算法由于是基于全局处理所以全局阈值法与OTSU二值法的效果要远远好于自适应阈值法。针对全局阈值法与OTSU二值法进行数据处理的相关验证与分析，避免由于在不同实验环境下算法的不稳定性，使得图像处理方案具有泛化能力。在较强的光线下的场景环境中进行图像数据的验证。
+<div align=center>
+<img width="195" alt="截屏2024-11-09 14 01 08" src="https://github.com/user-attachments/assets/7587b6a0-d434-4f92-a26b-978212a81180">
+<img width="195" alt="截屏2024-11-09 14 01 18" src="https://github.com/user-attachments/assets/3e07d4c6-f5af-483c-b37c-43c5fbe64b75">
+<img width="195" alt="截屏2024-11-09 14 01 25" src="https://github.com/user-attachments/assets/befe1a2d-fcf2-430f-8c6a-4a60d547de59">
+<img/></div>
 通过全阈值法与OTSU二值法进行处理后，在全阈值法中由于光照较强导致阈值设置的较高，从而导致在全阈值法处理中图像主要特征表现不明显，如图中绿色标识。在距离智能车较近的地方全阈值法处理的结果相比于OTSU二值法处理的结果出现了较多非正确特征值，相比之下OTSU二值法保留了较多的特征信息。
 
 ##### （5）行车图像数据的联通组件分析
 通过实际部署发现，数据在经过二值化处理后，仍然会存在一些处理不充分的特征，如下图39所示，即使后期通过了数据图像的裁剪，但也会导致由于在原始数据上存在难以处理的无关特征。在二值化处理后，使得赛道与赛道周围的差异性不断增大，由于此原因，故使用基于联通组件分析的方法对数据进行图像主体提取，并在图像主体提取后，根据图像主体重新制作新的数据集。从二值化以后的图像中，右上角部分（红色椭圆圈内）由于在原始图像中为周围墙壁与道路周围环境的交界处属于客观存在不可避免的无关特征，为了减小这些客观无关特征的干扰，进行联通组件分析的方法对图像主体特征进行提取，提取结果如图所示，根据提取出的图像按照原图像尺寸进行生成，最终形成图所示的新图像数据。
-
+<div align=center>
+<img width="195" alt="截屏2024-11-09 14 01 35" src="https://github.com/user-attachments/assets/1b61e1fd-3c7f-4973-a7ac-f4f5cd41d0fa">
+<img width="195" alt="截屏2024-11-09 14 01 43" src="https://github.com/user-attachments/assets/15b2da94-0807-4b1b-96c5-fba10fa2cedb">
+<img width="195" alt="截屏2024-11-09 14 01 49" src="https://github.com/user-attachments/assets/1a47b482-dddc-4647-a40d-d0e67ad4bd56">
+<img/></div>
 
 ##### （6）行车图像数据的裁剪与缩放
 最后对当前的处理结果进行图像的裁剪与缩放，在保证图像保留当前主要特征的前提下对图像无关特征进行裁剪。裁剪图像上半部分三分之一比例，从原图像480*640比例，裁剪到320*640比例，并在图像裁剪后对图像进行缩放，以提高模型训练效率与存储空间结构的优化。裁剪后的图像如图42所示，保留了当前图像数据中主要特征进一步帮助模型理解图像并使用图像进行模型部署。
-
-
+<div align=center>
+<img width="250" alt="截屏2024-11-09 14 02 01" src="https://github.com/user-attachments/assets/f38d2b2b-3748-40f0-a90e-2f386f05b9a0">
+<img width="250" alt="截屏2024-11-09 14 02 08" src="https://github.com/user-attachments/assets/8a7e90c9-fcbe-4150-b029-c7658c7e3165">
+<img/></div>
 最后将图像进行等比缩放，裁剪图像由原来320*640比例，等比缩放到100*200比例相比于原始图像数据在内存中缩小了11.25倍。并由后续所建立的行车数据处理系统与行车速度等数据进行打包，最终形成训练集与测试集。
 
 ##### 4.3.2.2 行车速度数据处理
@@ -210,8 +227,9 @@ Realize automatic driving, traffic light recognition, and obstacle avoidance on 
 
 #### 4.3.2.3 行车数据处理系统
 结合上述行车图像处理与行车数据处理的处理方法，设计行车数据处理系统，方便由于不确定因素从而进行多次采样后的数据处理情况。图像数据与速度数据相互依赖又相互约束。设计行车数据并行处理系统流程
-
-
+<div align=center>
+<img width="705" alt="截屏2024-11-09 14 05 26" src="https://github.com/user-attachments/assets/43a18026-b28c-4726-881b-700170e14acb">
+<img/></div>
 当数据采集时，由于ROS系统与各个自身功能部件的协调使得在数据采集过程中图像数据与行车速度数据大致重合但还不精确，为了避免由于时间差问题从而导致模型训练时误差的累积，故在读取标签文本数据并进行四类标签转换和行车图像数据后，首先进行两者数据量的对比，并进行时间一致性检验，保留都为在同一时刻发生的数据，并在此时获取行车图像路径索引。并处理速度为0的无效数据以及数据均衡化处理。在整个智能车行驶中占比最高的为前进，向左前行驶和向右前行驶的数据，由于在数据采集过程中，存在智能车在进入弯道前的位置不适宜接下来的弯道行驶，需要原地对智能车的位置进行调整，所以才存在了占比较小的倒车/刹车，顺时针旋转和逆时针旋转的数据。由于这三种标签占比量较小，而且在三大标签进行速度交接时可以起到润滑平滑换的作用故保留当前三种标签，对占比较大的三类标签进行标签处理。得到的结果如表5所示。
 
 表5 数据均衡化处理前与处理后数据量对比
