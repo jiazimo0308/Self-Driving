@@ -245,7 +245,8 @@ Realize automatic driving, traffic light recognition, and obstacle avoidance on 
 行车数据速度标签主要由时间，线速度，角速度构成。在进行收集的过程中，将采集到的数据存储在文本文档中，对此后的数据预处理会造成一定阻碍，所以将文本数据转换为表格格式，方便后续在行车速度数据上的数据处理。转换后的原数据如表2所示。
 
 (The driving data speed tag is mainly composed of time, line speed and angular speed. In the process of collection, the collected data is stored in the text document, which will cause certain obstacles to the subsequent data preprocessing. Therefore, the text data is converted into table format to facilitate the subsequent data processing on the driving speed data. The converted original data is shown in Table 2.)
-
+<div align=center>
+ 
 表2 部分速度数据转换结果（截取部分)
 |时间|	线速度|	角速度|
 |:---:| :---: | :---: |
@@ -255,11 +256,14 @@ Realize automatic driving, traffic light recognition, and obstacle avoidance on 
 |1706265099.28|	0.005632472	|-0.25|
 |1706265189.36|	0.06124844	|0|
 |1706265189.39|	0.065320253	|0|
+</div>
 
 由于线速度与角速度由正负表示方向，数值表示大小，不够直观和解释，所以对采集的线速度与角速度进行速度的分解，使展现的速度更加细化。若线速度数值为正则车辆向前行驶，反之，向后行驶。同理若角速度为正则车辆向左侧转向，反之，向右侧转向。根据上述原理，在原始数据中加入前进，后退，左转，右转四个方向的分动作标签从而更加直观的展现出动作的组成部分。如表3所示为差分后的速度标签。
 
 (Because the linear velocity and angular velocity are represented by positive and negative, and the numerical representation of the size is not intuitive and explained, the collected linear velocity and angular velocity are decomposed to make the displayed speed more refined. If the line speed value is regular, the vehicle will drive forward, and vice versa, drive backward. Similarly, if the angular velocity is regular, the vehicle will turn to the left, and vice versa, it will turn to the right. According to the above principle, four directions of forward, backward, left and right are added to the original data to show the components of the action more intuitively. As shown in Table 3, it is the speed label after the difference.)
 
+<div align=center>
+ 
 表3 差分后的速度标签
 |动作|标签|动作|标签|
 |:---:| :---: | :---: |:---: |
@@ -268,11 +272,13 @@ Realize automatic driving, traffic light recognition, and obstacle avoidance on 
 |向左前行驶	|1010|	逆时针旋转|	0010|
 |向右前行驶|1001|	顺时针旋转|	0001|
 |倒车/刹车|0100|	
+</div>
 
 在速度差分后的标签表示下，使智能车当前的状态表示更加的直观，但速度差分标签在计算机存储的情况下包含所有位信息，所以对存储资源可能会造成一定的浪费，由于智能车实现的功能量大以及有限的计算资源，在可以表示当前智能车动作的情况下，进一步优化标签形式提高计算资源的使用效率。根据智能车行驶的九个行驶状态，进行行驶标签的设定。将智能车行驶分为9种变长标签类别。优化传输或存储资源的使用效率，且在智能车实际行驶过程中对前方道路的识别具有高频率的动态变化特性，相对于速度差分编码简化的行驶状态编码更能直观的反应当前智能车行驶状态，方便更好的分辨智能车在当前环境下路况识别的准确性。如表4所示为根据智能车行驶的九个状态对行驶状态标签的设定。
 
 (Under the label representation after the speed difference, the current state representation of the smart car is more intuitive, but the speed difference label contains all the bit information in the case of computer storage, so it may cause a certain waste of storage resources. Due to the large number of functions and limited computing resources realised by the smart car, it can be represented In the current situation of intelligent car operation, the label form is further optimised to improve the efficiency of computing resources. The driving label is set according to the nine driving states of the smart car. Smart car driving is divided into 9 categories of variable-length labels. Optimise the use efficiency of transmission or storage resources, and the identification of the road ahead in the actual driving process of smart cars has the characteristics of high-frequency dynamic change. Compared with the speed difference code, the simplified driving status code can more intuitively reflect the current driving status of the smart car, which is convenient to better distinguish the road of smart cars in the current environment. The accuracy of situational recognition. As shown in Table 4, the driving status label is set according to the nine states of the smart car.)
-
+<div align=center>
+ 
 表4 根据运行状态划分的标签（进行了变长标签补齐）
 |动作|标签|动作|标签|
 |:---:| :---: | :---: |:---: |
@@ -281,7 +287,7 @@ Realize automatic driving, traffic light recognition, and obstacle avoidance on 
 |向左前行驶|000000100|逆时针旋转|010000000|
 |向右前行驶|000001000|顺时针旋转|100000000|
 |倒车/刹车|000010000|
-
+</div>
 根据运行状态划分的标签可在分类模型中使用，由于线速度与角速度的绝对值都处于0到1之间故不做过多的数据处理，线速度与角速度可在回归模型中使用。在采集到的所有数据中由于智能车无线通讯系统由于并行处理其他任务而可能产生智能车反应缓慢，对于PS2手柄所发出的指令不能及时执行，从而使智能车存在静止状态，对此，在数据采集过程中对线速度与角速度标签全为0的数据进行删除。在实际采集状态下，智能车可能与异常值产生原因相同的原因和实际客观因素的影响下造成数据采集量的不同，为了避免后期模型在训练时由于先前数据集所存在的问题造成模型的过拟合或在实际部署过程中存在模型对实际运行环境感知错误的情况，所以对数据进行均衡化处理，使各个状态标签下的数据不产生数据量差距过大的情况，保证模型训练时训练数据的水平化，不造成模型训练结果的偏失。
 
 (Labels divided according to the operating state can be used in the classification model. Because the absolute values of linear velocity and angular velocity are between 0 and 1, too much data is not processed, and linear velocity and angular velocity can be used in the regression model. In all the data collected, because the wireless communication system of the smart car may respond slowly to the intelligent car due to the parallel processing of other tasks, the instructions issued by the PS2 handle cannot be executed in time, so that the smart car is in a stationary state. In this regard, in the process of data collection, the line speed and angular velocity labels are all The data of 0 is deleted. In the actual acquisition state, the intelligent car may cause different data acquisition volume under the same reason as the abnormal value and under the influence of actual objective factors. In order to avoid the over-fitting of the model or the actual operation of the model during the actual deployment process due to problems in the previous data set during the actual deployment of the later model The environment perceives the wrong situation, so the data is balanced and processed, so that the data under each state label does not produce too much data volume gap, so as to ensure the horizontalisation of the training data during model training, and does not cause the deviation of the model training results.)
@@ -297,14 +303,15 @@ Realize automatic driving, traffic light recognition, and obstacle avoidance on 
 当数据采集时，由于ROS系统与各个自身功能部件的协调使得在数据采集过程中图像数据与行车速度数据大致重合但还不精确，为了避免由于时间差问题从而导致模型训练时误差的累积，故在读取标签文本数据并进行四类标签转换和行车图像数据后，首先进行两者数据量的对比，并进行时间一致性检验，保留都为在同一时刻发生的数据，并在此时获取行车图像路径索引。并处理速度为0的无效数据以及数据均衡化处理。在整个智能车行驶中占比最高的为前进，向左前行驶和向右前行驶的数据，由于在数据采集过程中，存在智能车在进入弯道前的位置不适宜接下来的弯道行驶，需要原地对智能车的位置进行调整，所以才存在了占比较小的倒车/刹车，顺时针旋转和逆时针旋转的数据。由于这三种标签占比量较小，而且在三大标签进行速度交接时可以起到润滑平滑换的作用故保留当前三种标签，对占比较大的三类标签进行标签处理。得到的结果如表5所示。
 
 (When data is collected, due to the coordination between the ROS system and each functional component of its own, the image data and the driving speed data roughly coincide but are not accurate during the data acquisition process. In order to avoid the accumulation of errors in model training due to the time difference problem, the label text data is read and four types of labels are carried out. After converting and driving image data, first compare the amount of data between the two, and carry out a time consistency test, retain the data that occurs at the same time, and obtain the driving image path index at this time. And process invalid data with a speed of 0 and data equalisation processing. The data that accounts for the highest proportion of the whole intelligent car driving is forward, driving to the left and driving to the right. Because in the data acquisition process, the position of the intelligent car before entering the curve is not suitable for the next curve, and the position of the intelligent car needs to be adjusted in place, so there is a relatively small reverse/ Data of braking, clockwise rotation and counterclockwise rotation. Because the proportion of these three labels is relatively small, and they can play a role in lubricating and smoothing when the three labels are handed over quickly, the current three labels are retained, and the three types of labels, which account for a relatively large proportion, are labelled. The results obtained are shown in Table 5.)
-
+<div align=center>
+ 
 表5 数据均衡化处理前与处理后数据量对比
 |动作|	处理前|	处理后|	动作	|处理前|	处理后|
 |:---:| :---: | :---: |:---: | :---: |:---: |
 |前进|4325|3304|倒车/刹车|9|9|
 |向左前行驶|3484|3298|顺时针旋转|12|12|
 |向右前行驶|3698|3300|逆时针旋转|32|32|
-
+</div>
 根据表5所示的占比最高的标签在数据均衡化后数据量相差不大，数据量基本均衡。数据均衡化的结果在经过需要删除数据名称的筛选和无效数据进行合并。在得到无效数据和均衡化要删除的图像名称后，图像根据无效数据和均衡化要删除的图像名对图像数据进行删除，删除后并再次进行两者数据量的比较和又一次的数据一致性检验。在此之后，图像数据进行数据增强，高斯模糊与灰度化，二值化与等比缩放，速度数据则根据标签进行分层抽样，并进行数据的划分得到速度数据的训练集与测试集，而后图像数据根据划分得到的训练集与测试集进行图像训练集与测试集的分类，在每组数据中进行分层抽样操作，并抽取30%作为测试集与剩下70%的数据作为训练集，最后将训练集与测试集进行打包形成最终的训练数据集与测试数据集。
 
 (According to the label with the highest proportion shown in Table 5, the data volume is not much different after data equalisation, and the data volume is basically balanced. The results of data equalisation are merged after filtering of data names that need to be deleted and invalid data. After obtaining the invalid data and the image name to be deleted by equalisation, the image deletes the image data according to the invalid data and the image name to be deleted by equalisation. After deletion, the amount of data between the two is compared and another data consistency test is carried out again. After that, the image data is enhanced, Gaussian blur and greyscale, binary and isometric scaling, the speed data is stratified and sampled according to the label, and the training set and test set of the speed data are divided into data, and then the image data is trained according to the training set and test set obtained by the division. Classify with the test set, carry out hierarchical sampling in each set of data, and extract 30% as the test set and the remaining 70% of the data as the training set. Finally, the training set and test set are packaged to form the final training data set and test data set.)
@@ -424,25 +431,31 @@ LeNet-5模型是一种早期的卷积神经网络模型，由Yann Lecun等人于
 
 (The two basic models based on the NVIDIA end-to-end model and the LeNet-5 model are trained according to different training tasks. Two tasks and four models of two architectures have been trained respectively. In order to further select the optimal model to realise the automatic driving of intelligent vehicles, these four models will be compared with the standards in the basis of model judgement and several latitudes such as training time, model size, and actual effect of the model. In the training of NVIDIA's end-to-end regression model and LeNet-5 regression model, the two models are compared under the condition that the parameters are similar and the training environment is the same. The training results of NVIDIA's end-to-end regression model and LeNet-5 regression model are shown in the table.)
 
+<div align=center>
+ 
 表6 两种回归类模型的训练结果比较
 |模型类别|MSE|MAE|训练批次占比|
 |:---:| :---: | :---: |:---: | 
 |英伟达端到端回归模型|0.010790275|0.046966029|158/600|
 |LeNet-5回归模型|0.011214698|0.052184216|340/600|
 
+</div>
+
 在两种回归类模型的训练比较中，LeNet-5回归模型的均方误差为0.011214698大于英伟达端到端回归模型的均方误差值0.010790275，而在平均绝对误差中LeNet-5回归模型也大于英伟达端到端回归模型的结果，在每批训练时间相似的情况下，英伟达端到端回归模型的训练时间要远远小于LeNet-5回归模型的训练时间。在英伟达端到端分类模型和LeNet-5分类模型训练中，在保证参数相似，训练环境相同的情况下进行两种模型的比较，英伟达端到端分类模型与LeNet-5分类模型训练结果如表所示。
 
 (In the training comparison of the two regression models, the mean square error of the LeNet-5 regression model is 0.011214698, which is greater than the mean square error value of the NVIDIA end-to-end regression model is 0.010790275, and in the average absolute error, the LeNet-5 regression model is also greater than the NVIDIA end. As a result of the end-to-end regression model, under the condition that the training time of each batch is similar, the training time of the NVIDIA end-to-end regression model is much less than the training time of the LeNet-5 regression model. In NVIDIA's end-to-end classification model and LeNet-5 classification model training, the two models are compared under the condition that the parameters are similar and the training environment is the same. The training results of NVIDIA's end-to-end classification model and LeNet-5 classification model are shown in the table.)
-
+<div align=center>
+ 
 表7 两种分类模型的训练结果的比较
 |模型类别|ACC|训练批次占比|
 |:---:| :---: | :---: |
 |英伟达端到端分类模型|0.97969496|52/600|
 |LeNet-5分类模型|0.94803104|41/600|
-
+</div>
 在英伟达端到端分类模型与LeNet-5分类模型的比较中，LeNet-5分类模型的准确率为0.94803104小于英伟达端到端分类模型的准确率0.97969496。且两种模型单次训练时间相似，其中LeNet-5分类模型的训练批次占比小于英伟达端到端分类模型，LeNet分类模型的训练速度更快。由于智能车所存在的算力资源一定的情况下，占用计算资源较小的模型会提高计算频率从而提高识别效率，针对四种模型进行内存资源占用上的比较。
 
 (In the comparison of NVIDIA's end-to-end classification model and LeNet-5 classification model, the accuracy rate of LeNet-5 classification model is 0.94803104, which is less than that of NVIDIA's end-to-end classification model.0.97969496. And the single training time of the two models is similar. Among them, the proportion of training batches of the LeNet-5 classification model is smaller than that of the NVIDIA end-to-end classification model, and the training speed of the LeNet classification model is faster.Due to the certain amount of computing power resources in intelligent vehicles, models that occupy less computing resources will increase the computing frequency and thus improve the recognition efficiency, and compare the memory resource occupation of the four models.)
+<div align=center>
 
 表8 四种模型内存空间占比
 |模型类别|内存占比|模型类别|内存占比|
@@ -450,6 +463,7 @@ LeNet-5模型是一种早期的卷积神经网络模型，由Yann Lecun等人于
 |英伟达端到端回归模型|41.20MB|英伟达端到端分类模型|43.13MB|
 |LeNet-5回归模型|83.66MB|LeNet-5分类模型|83.67MB|
 
+</div>
 根据表8中的数据可以清晰的看到，LeNet-5为基础的模型比英伟达端到端为基础的模型内存占用高，在相同任务的情况下，LeNet-5模型要比英伟达端到端模型多大约40MB内存空间，这主要由于模型架构的区别，当模型架构相似时，更多的卷积层可以使数据快速降低纬度，数据在通往后续的全连接层时，全连接层训练所需的参数数量相应减少。且在基础模型相同的情况下，分类模型由于最后一层的神经元个数比回归多，分类模型的内存占用比回归模型高，在LeNet-5的分类模型与回归模型的比较中，分类模型只比回归模型内存占用多0.01MB。但在英伟达端到端模型中，分类模型比回归模型内存占用多1.93MB。
 
 (According to the data in Table 8, it can be clearly seen that the LeNet-5-based model occupies more memory than the NVIDIA end-to-end-based model. In the same task, the LeNet-5 model has about 40MB more memory space than the NVIDIA end-to-end model, which is mainly due to the area of the model architecture. No, when the model architecture is similar, more convolutional layers can make the data quickly reduce the latitude. When the data leads to the subsequent full connection layer, the number of parameters required for full connection layer training is correspondingly reduced. And under the same condition that the basic model, because the number of neurons in the last layer of the classification model is more than that of regression, the memory occupation of the classification model is higher than that of the regression model. In the comparison between the classification model of LeNet-5 and the regression model, the classification model only occupies 0.01MB more memory than that of the regression model. However, in the NVIDIA end-to-end model, the classified model occupies 1.93MB more memory than the regression model.)
